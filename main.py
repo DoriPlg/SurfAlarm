@@ -2,6 +2,7 @@
 the main module for the surf forecast application, to run every morning, lighting up the right bulbs
 """
 from time import sleep
+import sys
 import RPi.GPIO as GPIO
 import forecast_pull
 import surf_rate
@@ -67,4 +68,13 @@ def morning_check():
 
 if __name__ == "__main__":
     init_leds()
-    turn_leds(morning_check())
+    if len(sys.argv) != 2:
+        print("Usage: python main.py [run/halt]")
+        sys.exit(1)
+    if sys.argv[1].lower() != "run":
+        turn_leds(morning_check())
+    elif sys.argv[1].lower() != "halt":
+        turn_leds(0)
+    else:
+        print("Usage: python main.py [run/halt]")
+        sys.exit(1)
