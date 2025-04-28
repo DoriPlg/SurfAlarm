@@ -11,46 +11,58 @@ GPIO.setmode(GPIO.BCM)
 # Assign GPIO pins
 LEDS = {"GREEN": 17, "YELLOW": 27, "BLUE": 22}
 
-def init_leds():
+def init_leds()->None:
     """
     Initializes the LEDs
     """
-    for led in LEDS.values():
+    for color, led in LEDS.items():
         GPIO.setup(led, GPIO.OUT)
-        GPIO.output(led, GPIO.LOW)
+        led_cont(color,False)
 
-def test():
+def led_cont(color:str, on: bool, disconnect:bool=False)->None:
+    """
+    Control the led of the specified color
+    :param color: the color of the led to control
+    :param on: true for on, false for off
+    :param disconnect: is we are in the disconnected version
+    """
+    if disconnect:
+        print(f"The {color} led is now {"on" if on else "off"}")
+    else:
+        GPIO.output(LEDS[color.capitalize()], GPIO.HIGH if on else GPIO.LOW)
+
+def test()->None:
     """
     Test function to blink the LEDs
     """
     # Blink them for testing
     while True:
-        for led in LEDS.values():
-            GPIO.output(led, GPIO.HIGH)
+        for color in LEDS:
+            led_cont(color,True)
             sleep(0.5)
-            GPIO.output(led, GPIO.LOW)
+            led_cont(color,False)
             sleep(0.5)
 
-def turn_leds(rate):
+def turn_leds(rate: int)->None:
     """
     Turns on the appropriate LED based on the surf rate
     :param rate: the surf rate, 0 = no surf, 1 = ok surf, 2 = good surf, -1 = error
     """
     if rate == 0:
-        for led in LEDS.values():
-            GPIO.output(led, GPIO.LOW)
+        for color in LEDS:
+            led_cont(color,False)
     elif rate == 1:
         turn_leds(0)
-        GPIO.output(LEDS["GREEN"], GPIO.HIGH)
+        led_cont("YELLOW",True)
     elif rate == 2:
         turn_leds(0)
-        GPIO.output(LEDS["YELLOW"], GPIO.HIGH)
+        led_cont("GREEN",True)
     elif rate == -1:
         turn_leds(0)
-        GPIO.output(LEDS["BLUE"], GPIO.HIGH)
+        led_cont("BLUE",True)
 
 
-def morning_check():
+def morning_check()->int:
     """
     checks the surf conditions and lights up the appropriate LED
     :return: the surf rate, 0 = no surf, 1 = ok surf, 2 = good surf, -1 = error
