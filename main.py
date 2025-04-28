@@ -19,12 +19,12 @@ def init_leds()->None:
         GPIO.setup(led, GPIO.OUT)
         led_cont(color,False)
 
-def led_cont(color:str, on: bool, disconnect:bool=False)->None:
+def led_cont(color:str, on: bool, disconnect:bool=True)->None:
     """
     Control the led of the specified color
     :param color: the color of the led to control
     :param on: true for on, false for off
-    :param disconnect: is we are in the disconnected version
+    :param disconnect: iF we are in the disconnected version
     """
     if disconnect:
         print(f"The {color} led is now {"on" if on else "off"}")
@@ -83,10 +83,13 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python main.py [run/halt]")
         sys.exit(1)
-    if sys.argv[1].lower() != "run":
+    arg = sys.argv[1].lower()
+    if arg == "run":
         turn_leds(morning_check())
-    elif sys.argv[1].lower() != "halt":
+    elif arg == "halt":
         turn_leds(0)
+    elif arg == "test":
+        test()
     else:
         print("Usage: python main.py [run/halt]")
         sys.exit(1)
